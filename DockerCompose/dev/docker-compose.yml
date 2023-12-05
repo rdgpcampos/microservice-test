@@ -1,0 +1,88 @@
+services:
+
+ configserver:
+  image: rdgpcampos/config:latest
+  mem_limit: 700m
+  ports:
+   - "8071:8071"
+  networks:
+   - rdgpcampos-network
+ 
+ eurekaserver:
+  image: rdgpcampos/servicebalancer
+  mem_limit: 700m
+  ports:
+   - "8070:8070"
+  networks:
+   - rdgpcampos-network
+  depends_on:
+   - configserver
+  deploy:
+   restart_policy:
+    condition: on-failure
+    delay: 5s
+    max_attempts: 3
+    window: 120s
+  environment:
+   SPRING_PROFILES_ACTIVE: dev
+   SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+ 
+ bankaccounts:
+  image: rdgpcampos/bankaccounts:latest
+  mem_limit: 700m
+  ports:
+   - "8080:8080"
+  networks:
+   - rdgpcampos-network
+  depends_on:
+   - configserver
+  deploy:
+   restart_policy:
+    condition: on-failure
+    delay: 5s
+    max_attempts: 3
+    window: 120s
+  environment:
+   SPRING_PROFILES_ACTIVE: dev
+   SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+
+ loans:
+  image: rdgpcampos/loan:latest
+  mem_limit: 700m
+  ports:
+   - "8090:8090"
+  networks:
+   - rdgpcampos-network
+  depends_on:
+   - configserver
+  deploy:
+   restart_policy:
+    condition: on-failure
+    delay: 5s
+    max_attempts: 3
+    window: 120s
+  environment:
+   SPRING_PROFILES_ACTIVE: dev
+   SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+
+ cards:
+  image: rdgpcampos/cards:latest
+  mem_limit: 700m
+  ports:
+   - "9000:9000"
+  networks:
+   - rdgpcampos-network
+  depends_on:
+   - configserver
+  deploy:
+   restart_policy:
+    condition: on-failure
+    delay: 5s
+    max_attempts: 3
+    window: 120s
+  environment:
+   SPRING_PROFILES_ACTIVE: dev
+   SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+
+networks:
+ rdgpcampos-network:

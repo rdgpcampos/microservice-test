@@ -1,0 +1,5 @@
+[variables]
+NIXPACKS_JDK_VERSION = '19'
+
+[start]
+cmd="java $JAVA_OPTS -jar target/*jar"
